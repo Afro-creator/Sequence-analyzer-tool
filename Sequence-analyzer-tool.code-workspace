@@ -1,9 +1,73 @@
-{
-	"folders": [
-		{
-			"uri": "vscode-remote://codespaces+refactored-cod-q7x7g59qjrjw2qq4/workspaces/Sequence-analyzer-tool"
-		}
-	],
-	"remoteAuthority": "codespaces+refactored-cod-q7x7g59qjrjw2qq4",
-	"settings": {}
-}
+def read_fasta(file_path):
+    """
+    Reads a FASTA file and returns header and sequence
+    """
+    header = ""
+    sequence = ""
+
+    with open(file_path, "r") as file:
+        for line in file:
+            line = line.strip()
+            if line.startswith(">"):
+                header = line
+            else:
+                sequence += line.upper()
+
+    return header, sequence
+
+
+def calculate_gc_content(sequence):
+    """
+    Calculates GC content percentage
+    """
+    if len(sequence) == 0:
+        return 0
+
+    g = sequence.count("G")
+    c = sequence.count("C")
+
+    gc_content = ((g + c) / len(sequence)) * 100
+    return round(gc_content, 2)
+
+
+def reverse_complement(sequence):
+    """
+    Returns reverse complement of DNA sequence
+    """
+    complement = {
+        "A": "T",
+        "T": "A",
+        "G": "C",
+        "C": "G"
+    }
+
+    reversed_seq = sequence[::-1]
+    rev_comp = "".join([complement.get(base, base) for base in reversed_seq])
+
+    return rev_comp
+
+
+def analyze_sequence(file_path):
+    """
+    Main analysis function
+    """
+    header, sequence = read_fasta(file_path)
+
+    length = len(sequence)
+    gc = calculate_gc_content(sequence)
+    rev_comp = reverse_complement(sequence)
+
+    print("\n=== Sequence Analysis Results ===")
+    print(f"Header: {header}")
+    print(f"Length: {length} bp")
+    print(f"GC Content: {gc}%")
+    print(f"Reverse Complement:\n{rev_comp}")
+
+
+if __name__ == "__main__":
+    file_path = input("Enter path to FASTA file: ").strip()
+    
+    try:
+        analyze_sequence(file_path)
+    except FileNotFoundError:
+        print("Error: File not found. Please check the path.")
